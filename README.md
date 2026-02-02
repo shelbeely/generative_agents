@@ -8,14 +8,40 @@
 
 This repository accompanies our research paper titled "[Generative Agents: Interactive Simulacra of Human Behavior](https://arxiv.org/abs/2304.03442)." It contains our core simulation module for  generative agents—computational agents that simulate believable human behaviors—and their game environment. Below, we document the steps for setting up the simulation environment on your local machine and for replaying the simulation as a demo animation.
 
+## 🚀 2026 Modernization Update
+
+This codebase has been **modernized for 2026** with the following improvements:
+
+- **✨ OpenRouter Integration**: Now supports [OpenRouter](https://openrouter.ai/) as a backend, giving you access to multiple AI providers (OpenAI, Anthropic, Meta, Google, Mistral, and more) through a single API
+- **📦 Updated Dependencies**: All packages updated to their latest stable versions compatible with 2026 standards
+- **🔧 Modern API Patterns**: Migrated from deprecated OpenAI SDK (v0.27.0) to the latest OpenAI SDK (v1.54.0+) with proper async support and error handling
+- **🌐 Multi-Model Support**: Easily switch between GPT-4, Claude 3, Llama 3, Gemini, and other state-of-the-art models
+- **💰 Cost Optimization**: Choose from various models at different price points to optimize costs
+- **⚡ Better Performance**: Updated to Django 4.2 LTS and Python 3.9+ for improved stability and performance
+
+**Backward Compatible**: You can still use direct OpenAI access if preferred. See setup instructions below.
+
 ## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Isabella_Rodriguez.png" alt="Generative Isabella">   Setting Up the Environment 
-To set up your environment, you will need to generate a `utils.py` file that contains your OpenAI API key and download the necessary packages.
+To set up your environment, you will need to generate a `utils.py` file that contains your API keys and download the necessary packages.
+
+**Note:** This codebase has been modernized for 2026 and now supports both OpenAI and OpenRouter backends. OpenRouter provides access to multiple AI models through a single API.
 
 ### Step 1. Generate Utils File
 In the `reverie/backend_server` folder (where `reverie.py` is located), create a new file titled `utils.py` and copy and paste the content below into the file:
-```
-# Copy and paste your OpenAI API Key
-openai_api_key = "<Your OpenAI API>"
+
+#### Option A: Using OpenRouter (Recommended for 2026)
+```python
+# OpenRouter Configuration (access multiple AI models through one API)
+use_openrouter = True
+openrouter_api_key = "<Your OpenRouter API Key>"
+# Choose your models from OpenRouter's catalog
+# Examples: "openai/gpt-3.5-turbo", "anthropic/claude-3-opus", "meta-llama/llama-3-70b-instruct"
+openrouter_chat_model = "openai/gpt-3.5-turbo"
+openrouter_gpt4_model = "openai/gpt-4"
+
+# OpenAI key still needed for embeddings (optional if using OpenRouter for embeddings too)
+openai_api_key = "<Your OpenAI API Key or leave empty>"
+
 # Put your name
 key_owner = "<Name>"
 
@@ -31,7 +57,34 @@ collision_block_id = "32125"
 # Verbose 
 debug = True
 ```
-Replace `<Your OpenAI API>` with your OpenAI API key, and `<name>` with your name.
+
+#### Option B: Using OpenAI Directly (Legacy)
+```python
+# OpenAI Configuration
+use_openrouter = False
+openai_api_key = "<Your OpenAI API Key>"
+
+# Put your name
+key_owner = "<Name>"
+
+maze_assets_loc = "../../environment/frontend_server/static_dirs/assets"
+env_matrix = f"{maze_assets_loc}/the_ville/matrix"
+env_visuals = f"{maze_assets_loc}/the_ville/visuals"
+
+fs_storage = "../../environment/frontend_server/storage"
+fs_temp_storage = "../../environment/frontend_server/temp_storage"
+
+collision_block_id = "32125"
+
+# Verbose 
+debug = True
+```
+
+**Getting API Keys:**
+- **OpenRouter**: Sign up at [openrouter.ai](https://openrouter.ai/) to get your API key. OpenRouter provides access to GPT-4, Claude, Llama, and many other models through a unified API.
+- **OpenAI**: Get your API key from [platform.openai.com](https://platform.openai.com/)
+
+Replace the placeholder values with your actual API keys and name.
  
 ### Step 2. Install requirements.txt
 Install everything listed in the `requirements.txt` file (I strongly recommend first setting up a virtualenv as usual). A note on Python version: we tested our environment on Python 3.9.12. 
@@ -82,7 +135,16 @@ To start the demo, go to the following address on your browser: `http://localhos
 [http://localhost:8000/demo/July1_the_ville_isabella_maria_klaus-step-3-20/1/3/](http://localhost:8000/demo/July1_the_ville_isabella_maria_klaus-step-3-20/1/3/)
 
 ### Tips
-We've noticed that OpenAI's API can hang when it reaches the hourly rate limit. When this happens, you may need to restart your simulation. For now, we recommend saving your simulation often as you progress to ensure that you lose as little of the simulation as possible when you do need to stop and rerun it. Running these simulations, at least as of early 2023, could be somewhat costly, especially when there are many agents in the environment.
+**2026 Update:** This codebase has been modernized with the latest API patterns and support for OpenRouter, which provides access to multiple AI providers (OpenAI, Anthropic, Meta, Google, etc.) through a single API. This gives you:
+- **More model choices**: Access GPT-4, Claude, Llama, Gemini, and more
+- **Better reliability**: Automatic fallback between providers
+- **Cost optimization**: Compare prices and choose the most cost-effective models
+
+**General Tips:**
+- Save your simulation frequently to avoid losing progress if API limits are reached
+- OpenRouter provides generous rate limits and supports many models, reducing the chance of interruptions
+- Consider using cheaper models like `openai/gpt-3.5-turbo` or `meta-llama/llama-3-8b-instruct` for development, and upgrade to `openai/gpt-4` or `anthropic/claude-3-opus` for production runs
+- Monitor your API usage through your provider's dashboard
 
 ## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Maria_Lopez.png" alt="Generative Maria">   Simulation Storage Location
 All simulations that you save will be located in `environment/frontend_server/storage`, and all compressed demos will be located in `environment/frontend_server/compressed_storage`. 

@@ -2,16 +2,31 @@
 Author: Joon Sung Park (joonspk@stanford.edu)
 
 File: gpt_structure.py
-Description: Wrapper functions for calling OpenAI APIs.
+Description: Wrapper functions for calling OpenAI APIs and OpenRouter.
+Modernized for 2026 with support for OpenRouter backend.
 """
 import json
 import random
-import openai
-import time 
+import time
+from openai import OpenAI
 
 from utils import *
 
-openai.api_key = openai_api_key
+# Initialize the OpenAI client based on configuration
+# Supports both direct OpenAI and OpenRouter backends
+if use_openrouter:
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=openrouter_api_key,
+    )
+    # Default models for OpenRouter
+    default_chat_model = openrouter_chat_model if 'openrouter_chat_model' in dir() else "openai/gpt-3.5-turbo"
+    default_gpt4_model = openrouter_gpt4_model if 'openrouter_gpt4_model' in dir() else "openai/gpt-4"
+else:
+    client = OpenAI(api_key=openai_api_key)
+    # Default models for OpenAI
+    default_chat_model = "gpt-3.5-turbo"
+    default_gpt4_model = "gpt-4"
 
 def temp_sleep(seconds=0.1):
   time.sleep(seconds)
@@ -19,11 +34,11 @@ def temp_sleep(seconds=0.1):
 def ChatGPT_single_request(prompt): 
   temp_sleep()
 
-  completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo", 
+  completion = client.chat.completions.create(
+    model=default_chat_model, 
     messages=[{"role": "user", "content": prompt}]
   )
-  return completion["choices"][0]["message"]["content"]
+  return completion.choices[0].message.content
 
 
 # ============================================================================
@@ -40,19 +55,19 @@ def GPT4_request(prompt):
                    the parameter and the values indicating the parameter 
                    values.   
   RETURNS: 
-    a str of GPT-3's response. 
+    a str of GPT-4's response. 
   """
   temp_sleep()
 
   try: 
-    completion = openai.ChatCompletion.create(
-    model="gpt-4", 
-    messages=[{"role": "user", "content": prompt}]
+    completion = client.chat.completions.create(
+      model=default_gpt4_model, 
+      messages=[{"role": "user", "content": prompt}]
     )
-    return completion["choices"][0]["message"]["content"]
+    return completion.choices[0].message.content
   
-  except: 
-    print ("ChatGPT ERROR")
+  except Exception as e: 
+    print (f"ChatGPT ERROR: {e}")
     return "ChatGPT ERROR"
 
 
@@ -66,18 +81,18 @@ def ChatGPT_request(prompt):
                    the parameter and the values indicating the parameter 
                    values.   
   RETURNS: 
-    a str of GPT-3's response. 
+    a str of GPT-3.5's response. 
   """
   # temp_sleep()
   try: 
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo", 
-    messages=[{"role": "user", "content": prompt}]
+    completion = client.chat.completions.create(
+      model=default_chat_model, 
+      messages=[{"role": "user", "content": prompt}]
     )
-    return completion["choices"][0]["message"]["content"]
+    return completion.choices[0].message.content
   
-  except: 
-    print ("ChatGPT ERROR")
+  except Exception as e: 
+    print (f"ChatGPT ERROR: {e}")
     return "ChatGPT ERROR"
 
 
@@ -208,19 +223,20 @@ def GPT_request(prompt, gpt_parameter):
   """
   temp_sleep()
   try: 
-    response = openai.Completion.create(
-                model=gpt_parameter["engine"],
-                prompt=prompt,
-                temperature=gpt_parameter["temperature"],
-                max_tokens=gpt_parameter["max_tokens"],
-                top_p=gpt_parameter["top_p"],
-                frequency_penalty=gpt_parameter["frequency_penalty"],
-                presence_penalty=gpt_parameter["presence_penalty"],
-                stream=gpt_parameter["stream"],
-                stop=gpt_parameter["stop"],)
-    return response.choices[0].text
-  except: 
-    print ("TOKEN LIMIT EXCEEDED")
+    # Note: Legacy completion endpoint is deprecated, converting to chat format
+    # For backward compatibility with old GPT-3 parameters
+    response = client.chat.completions.create(
+                model=gpt_parameter.get("engine", "gpt-3.5-turbo-instruct").replace("text-davinci-", "gpt-3.5-turbo"),
+                messages=[{"role": "user", "content": prompt}],
+                temperature=gpt_parameter.get("temperature", 0.7),
+                max_tokens=gpt_parameter.get("max_tokens", 150),
+                top_p=gpt_parameter.get("top_p", 1),
+                frequency_penalty=gpt_parameter.get("frequency_penalty", 0),
+                presence_penalty=gpt_parameter.get("presence_penalty", 0),
+                stop=gpt_parameter.get("stop", None))
+    return response.choices[0].message.content
+  except Exception as e: 
+    print (f"TOKEN LIMIT EXCEEDED OR ERROR: {e}")
     return "TOKEN LIMIT EXCEEDED"
 
 
@@ -277,8 +293,9 @@ def get_embedding(text, model="text-embedding-ada-002"):
   text = text.replace("\n", " ")
   if not text: 
     text = "this is blank"
-  return openai.Embedding.create(
-          input=[text], model=model)['data'][0]['embedding']
+  response = client.embeddings.create(
+          input=[text], model=model)
+  return response.data[0].embedding
 
 
 if __name__ == '__main__':

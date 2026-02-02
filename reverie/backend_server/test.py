@@ -1,16 +1,26 @@
 """
 Author: Joon Sung Park (joonspk@stanford.edu)
 
-File: gpt_structure.py
-Description: Wrapper functions for calling OpenAI APIs.
+File: test.py
+Description: Test file for API calls. Modernized for 2026.
 """
 import json
 import random
-import openai
 import time 
+from openai import OpenAI
 
 from utils import *
-openai.api_key = openai_api_key
+
+# Initialize the OpenAI client based on configuration
+if use_openrouter:
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=openrouter_api_key,
+    )
+    default_chat_model = openrouter_chat_model if 'openrouter_chat_model' in dir() else "openai/gpt-3.5-turbo"
+else:
+    client = OpenAI(api_key=openai_api_key)
+    default_chat_model = "gpt-3.5-turbo"
 
 def ChatGPT_request(prompt): 
   """
@@ -26,14 +36,14 @@ def ChatGPT_request(prompt):
   """
   # temp_sleep()
   try: 
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo", 
-    messages=[{"role": "user", "content": prompt}]
+    completion = client.chat.completions.create(
+      model=default_chat_model, 
+      messages=[{"role": "user", "content": prompt}]
     )
-    return completion["choices"][0]["message"]["content"]
+    return completion.choices[0].message.content
   
-  except: 
-    print ("ChatGPT ERROR")
+  except Exception as e: 
+    print (f"ChatGPT ERROR: {e}")
     return "ChatGPT ERROR"
 
 prompt = """
