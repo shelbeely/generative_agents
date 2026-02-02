@@ -1,39 +1,67 @@
 """
 Author: Joon Sung Park (joonspk@stanford.edu)
 
-File: gpt_structure.py
-Description: Wrapper functions for calling OpenAI APIs.
+File: test.py
+Description: Test file for API calls. Modernized for 2026.
+Uses the latest OpenAI Python SDK (v1.54.0+) patterns.
 """
 import json
 import random
-import openai
 import time 
+from openai import OpenAI, APIError, APIConnectionError, RateLimitError
 
 from utils import *
-openai.api_key = openai_api_key
+
+# Initialize the OpenAI client based on configuration
+# Uses the latest OpenAI SDK with client-based approach
+if use_openrouter:
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=openrouter_api_key,
+        timeout=60.0,
+        max_retries=2,
+    )
+    try:
+        default_chat_model = openrouter_chat_model
+    except NameError:
+        default_chat_model = "openai/gpt-3.5-turbo"
+else:
+    client = OpenAI(
+        api_key=openai_api_key,
+        timeout=60.0,
+        max_retries=2,
+    )
+    default_chat_model = "gpt-3.5-turbo"
 
 def ChatGPT_request(prompt): 
   """
   Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
   server and returns the response. 
+  Uses the latest OpenAI SDK (v1.0+) with proper error handling.
   ARGS:
     prompt: a str prompt
-    gpt_parameter: a python dictionary with the keys indicating the names of  
-                   the parameter and the values indicating the parameter 
-                   values.   
   RETURNS: 
-    a str of GPT-3's response. 
+    a str of GPT's response. 
   """
   # temp_sleep()
   try: 
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo", 
-    messages=[{"role": "user", "content": prompt}]
+    completion = client.chat.completions.create(
+      model=default_chat_model, 
+      messages=[{"role": "user", "content": prompt}]
     )
-    return completion["choices"][0]["message"]["content"]
+    return completion.choices[0].message.content
   
-  except: 
-    print ("ChatGPT ERROR")
+  except RateLimitError as e:
+    print(f"Rate limit error: {e}")
+    return "ChatGPT ERROR"
+  except APIConnectionError as e:
+    print(f"Connection error: {e}")
+    return "ChatGPT ERROR"
+  except APIError as e:
+    print(f"API error: {e}")
+    return "ChatGPT ERROR"
+  except Exception as e: 
+    print(f"Unexpected error: {e}")
     return "ChatGPT ERROR"
 
 prompt = """
