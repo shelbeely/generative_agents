@@ -100,3 +100,15 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Node.js / Bun.js
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+bun.lockb
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
