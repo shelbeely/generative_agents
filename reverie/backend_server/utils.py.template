@@ -24,8 +24,14 @@ Choose one of the two options below:
 # - "google/gemini-pro" - Google's Gemini model
 # See full list at: https://openrouter.ai/models
 
+# Model Configuration:
+# openrouter_chat_model - Used for standard/fast operations (ChatGPT_request function)
+# openrouter_gpt4_model - Used for advanced/reasoning tasks (GPT4_request function)
+#                         NOTE: Despite the name, this can be ANY model - GPT-4, Claude, Gemini, etc.
+#                         The name is historical; it refers to "advanced model" not specifically GPT-4.
+
 # openrouter_chat_model = "openai/gpt-3.5-turbo"
-# openrouter_gpt4_model = "openai/gpt-4"
+# openrouter_gpt4_model = "openai/gpt-4"  # Or: "anthropic/claude-3-opus", "google/gemini-pro", etc.
 
 # OpenAI key (optional, only needed if using OpenAI embeddings)
 # openai_api_key = "<Your OpenAI API Key>"

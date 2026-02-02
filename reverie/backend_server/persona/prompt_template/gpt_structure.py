@@ -30,6 +30,8 @@ if use_openrouter:
         default_chat_model = "openai/gpt-3.5-turbo"
     
     try:
+        # Note: openrouter_gpt4_model can be ANY advanced model (GPT-4, Claude, Gemini, etc.)
+        # The variable name is historical - "gpt4" refers to "advanced reasoning model"
         default_gpt4_model = openrouter_gpt4_model
     except NameError:
         default_gpt4_model = "openai/gpt-4"

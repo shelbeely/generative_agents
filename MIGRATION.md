@@ -46,8 +46,14 @@ OpenRouter provides access to multiple AI providers through a single API. This g
 # In utils.py
 use_openrouter = True
 openrouter_api_key = "your-openrouter-key"
-openrouter_chat_model = "openai/gpt-3.5-turbo"  # or any model from OpenRouter
-openrouter_gpt4_model = "anthropic/claude-3-opus"  # Mix and match providers!
+
+# Model selection - you can mix and match any models!
+openrouter_chat_model = "openai/gpt-3.5-turbo"  # For standard/fast operations
+openrouter_gpt4_model = "anthropic/claude-3-opus"  # For advanced reasoning tasks
+
+# Important: "openrouter_gpt4_model" is just a variable name!
+# Despite the name, you can use ANY model here - GPT-4, Claude, Gemini, Llama, etc.
+# The "gpt4" in the name is historical and refers to "advanced model", not specifically GPT-4
 ```
 
 #### Available Models (Examples):
@@ -58,6 +64,8 @@ openrouter_gpt4_model = "anthropic/claude-3-opus"  # Mix and match providers!
 - `meta-llama/llama-3-70b-instruct` - Open-source alternative
 - `google/gemini-pro` - Google's Gemini
 - See full list at: https://openrouter.ai/models
+
+**Note on Variable Names**: The codebase uses `ChatGPT_request()` and `GPT4_request()` function names for historical reasons. These refer to "standard model" and "advanced model" respectively, not specifically to ChatGPT or GPT-4. You can use any models you want!
 
 ### 3. Modern Error Handling
 
@@ -189,6 +197,36 @@ python test.py
 ```
 
 This will make a test API call and confirm everything is working.
+
+## Frequently Asked Questions
+
+### Why is it called "openrouter_gpt4_model" if I can use any model?
+
+The variable name `openrouter_gpt4_model` is **historical**. The original codebase was designed around GPT-3.5 (ChatGPT) and GPT-4, so the function names stuck:
+- `ChatGPT_request()` → uses `openrouter_chat_model` → for fast/standard operations
+- `GPT4_request()` → uses `openrouter_gpt4_model` → for advanced reasoning tasks
+
+**Important**: Despite the names, you can use ANY models you want! Examples:
+```python
+openrouter_chat_model = "meta-llama/llama-3-8b-instruct"  # Fast, cheap for development
+openrouter_gpt4_model = "anthropic/claude-3-opus"  # Premium reasoning model
+```
+
+The "GPT-4" in the variable name just means "advanced/premium model", not specifically GPT-4!
+
+### Can I use different providers for each model?
+
+Yes! That's the beauty of OpenRouter. Mix and match:
+```python
+openrouter_chat_model = "openai/gpt-3.5-turbo"  # OpenAI for speed
+openrouter_gpt4_model = "anthropic/claude-3-opus"  # Anthropic for reasoning
+```
+
+Or use completely open-source models:
+```python
+openrouter_chat_model = "meta-llama/llama-3-8b-instruct"
+openrouter_gpt4_model = "meta-llama/llama-3-70b-instruct"
+```
 
 ## Getting Help
 

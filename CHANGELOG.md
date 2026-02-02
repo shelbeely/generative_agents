@@ -30,8 +30,9 @@ This document provides a high-level summary of all changes made to modernize the
 # In utils.py
 use_openrouter = True
 openrouter_api_key = "sk-or-v1-..."
-openrouter_chat_model = "openai/gpt-3.5-turbo"
-openrouter_gpt4_model = "anthropic/claude-3-opus"
+openrouter_chat_model = "openai/gpt-3.5-turbo"  # Standard/fast model
+openrouter_gpt4_model = "anthropic/claude-3-opus"  # Advanced reasoning model
+# Note: Despite the name, openrouter_gpt4_model can be ANY model - Claude, GPT-4, Gemini, etc.
 ```
 
 ### 3. Dependency Updates

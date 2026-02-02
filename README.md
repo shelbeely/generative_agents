@@ -34,10 +34,14 @@ In the `reverie/backend_server` folder (where `reverie.py` is located), create a
 # OpenRouter Configuration (access multiple AI models through one API)
 use_openrouter = True
 openrouter_api_key = "<Your OpenRouter API Key>"
+
 # Choose your models from OpenRouter's catalog
-# Examples: "openai/gpt-3.5-turbo", "anthropic/claude-3-opus", "meta-llama/llama-3-70b-instruct"
+# openrouter_chat_model: Used for standard/fast operations
+# openrouter_gpt4_model: Used for advanced reasoning tasks
+#   Note: Despite the name "gpt4", this can be ANY model you want for advanced tasks!
+#   Examples: "anthropic/claude-3-opus", "openai/gpt-4", "google/gemini-pro"
 openrouter_chat_model = "openai/gpt-3.5-turbo"
-openrouter_gpt4_model = "openai/gpt-4"
+openrouter_gpt4_model = "openai/gpt-4"  # Can use Claude, Gemini, or any other model!
 
 # OpenAI key still needed for embeddings (optional if using OpenRouter for embeddings too)
 openai_api_key = "<Your OpenAI API Key or leave empty>"
@@ -85,6 +89,15 @@ debug = True
 - **OpenAI**: Get your API key from [platform.openai.com](https://platform.openai.com/)
 
 Replace the placeholder values with your actual API keys and name.
+
+**💡 Important Note about Model Selection:**
+The variable `openrouter_gpt4_model` can be **any model**, not just GPT-4! The name is historical. You can use:
+- `"anthropic/claude-3-opus"` for Anthropic's best reasoning
+- `"google/gemini-pro"` for Google's Gemini
+- `"meta-llama/llama-3-70b-instruct"` for open-source
+- Or any model from [OpenRouter's catalog](https://openrouter.ai/models)
+
+The "gpt4" in the variable name just refers to "advanced reasoning model", not specifically GPT-4!
 
 **📖 Migration Guide**: If you're upgrading from the old version (pre-2026), see [MIGRATION.md](MIGRATION.md) for detailed migration instructions and troubleshooting.
  
