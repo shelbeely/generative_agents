@@ -4,27 +4,42 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 File: gpt_structure.py
 Description: Wrapper functions for calling OpenAI APIs and OpenRouter.
 Modernized for 2026 with support for OpenRouter backend.
+Uses the latest OpenAI Python SDK (v1.54.0+) patterns.
 """
 import json
 import random
 import time
-from openai import OpenAI
+from openai import OpenAI, APIError, APIConnectionError, RateLimitError
 
 from utils import *
 
 # Initialize the OpenAI client based on configuration
 # Supports both direct OpenAI and OpenRouter backends
+# The new OpenAI SDK uses a client-based approach (as of v1.0.0+)
 if use_openrouter:
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=openrouter_api_key,
+        timeout=60.0,  # 60 second timeout
+        max_retries=2,  # Built-in retry logic
     )
-    # Default models for OpenRouter
-    default_chat_model = openrouter_chat_model if 'openrouter_chat_model' in dir() else "openai/gpt-3.5-turbo"
-    default_gpt4_model = openrouter_gpt4_model if 'openrouter_gpt4_model' in dir() else "openai/gpt-4"
+    # Default models for OpenRouter - check if custom models are defined
+    try:
+        default_chat_model = openrouter_chat_model
+    except NameError:
+        default_chat_model = "openai/gpt-3.5-turbo"
+    
+    try:
+        default_gpt4_model = openrouter_gpt4_model
+    except NameError:
+        default_gpt4_model = "openai/gpt-4"
 else:
-    client = OpenAI(api_key=openai_api_key)
-    # Default models for OpenAI
+    client = OpenAI(
+        api_key=openai_api_key,
+        timeout=60.0,  # 60 second timeout
+        max_retries=2,  # Built-in retry logic
+    )
+    # Default models for OpenAI (using latest model names)
     default_chat_model = "gpt-3.5-turbo"
     default_gpt4_model = "gpt-4"
 
@@ -49,11 +64,9 @@ def GPT4_request(prompt):
   """
   Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
   server and returns the response. 
+  Uses the latest OpenAI SDK (v1.0+) with proper error handling.
   ARGS:
     prompt: a str prompt
-    gpt_parameter: a python dictionary with the keys indicating the names of  
-                   the parameter and the values indicating the parameter 
-                   values.   
   RETURNS: 
     a str of GPT-4's response. 
   """
@@ -66,8 +79,17 @@ def GPT4_request(prompt):
     )
     return completion.choices[0].message.content
   
+  except RateLimitError as e:
+    print(f"Rate limit error: {e}")
+    return "ChatGPT ERROR"
+  except APIConnectionError as e:
+    print(f"Connection error: {e}")
+    return "ChatGPT ERROR"
+  except APIError as e:
+    print(f"API error: {e}")
+    return "ChatGPT ERROR"
   except Exception as e: 
-    print (f"ChatGPT ERROR: {e}")
+    print(f"Unexpected error: {e}")
     return "ChatGPT ERROR"
 
 
@@ -75,11 +97,9 @@ def ChatGPT_request(prompt):
   """
   Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
   server and returns the response. 
+  Uses the latest OpenAI SDK (v1.0+) with proper error handling.
   ARGS:
     prompt: a str prompt
-    gpt_parameter: a python dictionary with the keys indicating the names of  
-                   the parameter and the values indicating the parameter 
-                   values.   
   RETURNS: 
     a str of GPT-3.5's response. 
   """
@@ -91,8 +111,17 @@ def ChatGPT_request(prompt):
     )
     return completion.choices[0].message.content
   
+  except RateLimitError as e:
+    print(f"Rate limit error: {e}")
+    return "ChatGPT ERROR"
+  except APIConnectionError as e:
+    print(f"Connection error: {e}")
+    return "ChatGPT ERROR"
+  except APIError as e:
+    print(f"API error: {e}")
+    return "ChatGPT ERROR"
   except Exception as e: 
-    print (f"ChatGPT ERROR: {e}")
+    print(f"Unexpected error: {e}")
     return "ChatGPT ERROR"
 
 

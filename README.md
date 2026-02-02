@@ -85,9 +85,22 @@ debug = True
 - **OpenAI**: Get your API key from [platform.openai.com](https://platform.openai.com/)
 
 Replace the placeholder values with your actual API keys and name.
+
+**📖 Migration Guide**: If you're upgrading from the old version (pre-2026), see [MIGRATION.md](MIGRATION.md) for detailed migration instructions and troubleshooting.
  
 ### Step 2. Install requirements.txt
-Install everything listed in the `requirements.txt` file (I strongly recommend first setting up a virtualenv as usual). A note on Python version: we tested our environment on Python 3.9.12. 
+Install everything listed in the `requirements.txt` file (I strongly recommend first setting up a virtualenv as usual). 
+
+**Python Version**: This modernized version requires **Python 3.9+**. We've tested on Python 3.9, 3.10, and 3.11. Python 3.8 and below are not supported due to dependency requirements.
+
+```bash
+# Create a virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+``` 
 
 ## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Klaus_Mueller.png" alt="Generative Klaus">   Running a Simulation 
 To run a new simulation, you will need to concurrently start two servers: the environment server and the agent simulation server.
