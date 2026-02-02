@@ -7,9 +7,20 @@
 
 import { config } from './config.js';
 
+export type MessageContent = 
+  | string 
+  | Array<{
+      type: 'text' | 'image_url';
+      text?: string;
+      image_url?: {
+        url: string;
+        detail?: 'auto' | 'low' | 'high';
+      };
+    }>;
+
 export interface OpenRouterMessage {
   role: 'system' | 'user' | 'assistant';
-  content: string;
+  content: MessageContent;
 }
 
 export interface OpenRouterCompletionRequest {
@@ -113,6 +124,102 @@ export class OpenRouterClient {
    */
   async singleCompletion(prompt: string, model?: string): Promise<string> {
     return this.chatCompletion([{ role: 'user', content: prompt }], { model });
+  }
+
+  /**
+   * Make a vision-enabled completion request with image(s)
+   * Supports both base64 encoded images and URLs
+   * 
+   * @param prompt - Text prompt/question about the image(s)
+   * @param images - Array of image data (URLs or base64 strings)
+   * @param options - Additional completion options
+   * @returns The model's response
+   * 
+   * @example
+   * ```typescript
+   * const response = await client.visionCompletion(
+   *   "What do you see in this game scene?",
+   *   ["https://example.com/game-scene.png"],
+   *   { model: "openai/gpt-4-vision-preview" }
+   * );
+   * ```
+   */
+  async visionCompletion(
+    prompt: string,
+    images: string[],
+    options: Partial<OpenRouterCompletionRequest> & { detail?: 'auto' | 'low' | 'high' } = {}
+  ): Promise<string> {
+    const { detail = 'auto', ...completionOptions } = options;
+
+    // Build content array with text and images
+    const content: MessageContent = [
+      { type: 'text', text: prompt },
+      ...images.map((imageUrl) => ({
+        type: 'image_url' as const,
+        image_url: {
+          url: imageUrl,
+          detail,
+        },
+      })),
+    ];
+
+    return this.chatCompletion([{ role: 'user', content }], completionOptions);
+  }
+
+  /**
+   * Analyze a game scene screenshot
+   * Helper method specifically for game state analysis
+   */
+  async analyzeGameScene(
+    imageUrl: string,
+    query: string,
+    options?: Partial<OpenRouterCompletionRequest>
+  ): Promise<string> {
+    const systemPrompt = `You are analyzing a scene from a life simulation game. 
+Describe what you observe about the agents, their positions, activities, and the environment.
+Be specific and concise.`;
+
+    return this.chatCompletion(
+      [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: query },
+            {
+              type: 'image_url',
+              image_url: { url: imageUrl, detail: 'high' },
+            },
+          ],
+        },
+      ],
+      options
+    );
+  }
+
+  /**
+   * Compare two game scenes and describe changes
+   * Useful for understanding agent movements and state changes
+   */
+  async compareGameScenes(
+    beforeImageUrl: string,
+    afterImageUrl: string,
+    options?: Partial<OpenRouterCompletionRequest>
+  ): Promise<string> {
+    return this.visionCompletion(
+      'Compare these two game scenes. What changed between the first and second image? Describe agent movements, interactions, and environmental changes.',
+      [beforeImageUrl, afterImageUrl],
+      { detail: 'high', ...options }
+    );
+  }
+
+  /**
+   * Generate a base64 data URL from a file path or buffer
+   * Utility for converting images to base64 for vision APIs
+   */
+  static imageToBase64DataUrl(imageBuffer: Buffer, mimeType: string = 'image/png'): string {
+    const base64 = imageBuffer.toString('base64');
+    return `data:${mimeType};base64,${base64}`;
   }
 
   /**

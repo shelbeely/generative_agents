@@ -9,6 +9,7 @@
     "build": "bun build src/backend/reverie.ts --outdir dist --target bun",
     "start": "bun run src/backend/reverie.ts",
     "start:frontend": "bun run src/frontend/server.ts",
+    "demo:vision": "npx tsx examples/vision-demo.ts",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "type-check": "tsc --noEmit"

@@ -17,6 +17,7 @@ export interface Config {
     defaultModel: string;
     fastModel: string;
     advancedModel: string;
+    visionModel: string;
   };
 
   // Application Configuration
@@ -79,9 +80,10 @@ export const config: Config = {
   openrouter: {
     apiKey: getEnvVar('OPENROUTER_API_KEY'),
     baseUrl: getEnvVar('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
-    defaultModel: getEnvVar('DEFAULT_MODEL', 'openai/gpt-3.5-turbo'),
-    fastModel: getEnvVar('FAST_MODEL', 'openai/gpt-3.5-turbo'),
-    advancedModel: getEnvVar('ADVANCED_MODEL', 'openai/gpt-4'),
+    defaultModel: getEnvVar('DEFAULT_MODEL', 'google/gemini-3-flash'),
+    fastModel: getEnvVar('FAST_MODEL', 'google/gemini-3-flash'),
+    advancedModel: getEnvVar('ADVANCED_MODEL', 'google/gemini-3-pro'),
+    visionModel: getEnvVar('VISION_MODEL', 'google/gemini-3-flash'),
   },
 
   app: {
