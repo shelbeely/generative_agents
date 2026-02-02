@@ -119,8 +119,6 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-# USE_L10N is deprecated in Django 4.0+ (always True)
-
 USE_TZ = True
 
 

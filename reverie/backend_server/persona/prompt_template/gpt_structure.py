@@ -254,8 +254,19 @@ def GPT_request(prompt, gpt_parameter):
   try: 
     # Note: Legacy completion endpoint is deprecated, converting to chat format
     # For backward compatibility with old GPT-3 parameters
+    # Map old model names to modern equivalents
+    engine = gpt_parameter.get("engine", "gpt-3.5-turbo")
+    model_mapping = {
+        "text-davinci-003": "gpt-3.5-turbo",
+        "text-davinci-002": "gpt-3.5-turbo",
+        "text-curie-001": "gpt-3.5-turbo",
+        "text-babbage-001": "gpt-3.5-turbo",
+        "text-ada-001": "gpt-3.5-turbo",
+    }
+    model = model_mapping.get(engine, engine)
+    
     response = client.chat.completions.create(
-                model=gpt_parameter.get("engine", "gpt-3.5-turbo-instruct").replace("text-davinci-", "gpt-3.5-turbo"),
+                model=model,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=gpt_parameter.get("temperature", 0.7),
                 max_tokens=gpt_parameter.get("max_tokens", 150),
