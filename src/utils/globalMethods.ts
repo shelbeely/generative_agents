@@ -52,14 +52,6 @@ export async function writeListToCsvLine(lineList: string[], outfile: string): P
 
   const csvLine = lineList.join(',') + '\n';
 
-  // Check if file exists
-  let fileExists = true;
-  try {
-    await access(outfile, constants.F_OK);
-  } catch {
-    fileExists = false;
-  }
-
   // Append to file or create new file
   const stream = createWriteStream(outfile, { flags: 'a' });
   stream.write(csvLine);

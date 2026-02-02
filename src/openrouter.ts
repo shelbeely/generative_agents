@@ -223,8 +223,8 @@ Example output json:
         throw new Error(`Embedding API error: ${response.status}`);
       }
 
-      const data = await response.json();
-      return data.data[0].embedding;
+      const data = (await response.json()) as { data: Array<{ embedding: number[] }> };
+      return data.data[0]?.embedding ?? [];
     } catch (error) {
       console.error('Embedding API Error:', error);
       throw error;

@@ -41,8 +41,8 @@
     "allowJs": true,
     "checkJs": false,
     
-    // Bun specific
-    "types": ["bun-types"],
+    // Bun specific (disabled for Node.js compatibility)
+    // "types": ["bun-types"],
     
     // Paths
     "baseUrl": ".",
