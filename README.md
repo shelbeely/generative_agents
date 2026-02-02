@@ -100,7 +100,24 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-``` 
+```
+
+### Step 3. Validate Your Setup (Recommended)
+
+Before running the simulation, validate that everything is configured correctly:
+
+```bash
+cd reverie/backend_server
+python validate_setup.py
+```
+
+This script will check:
+- ✓ Python version compatibility
+- ✓ Required dependencies are installed
+- ✓ utils.py is properly configured
+- ✓ API connection is working
+
+If all checks pass, you're ready to run the simulation!
 
 ## <img src="https://joonsungpark.s3.amazonaws.com:443/static/assets/characters/profile/Klaus_Mueller.png" alt="Generative Klaus">   Running a Simulation 
 To run a new simulation, you will need to concurrently start two servers: the environment server and the agent simulation server.
