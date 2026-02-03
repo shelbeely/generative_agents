@@ -339,5 +339,11 @@ Example output json:
   }
 }
 
-// Export a default instance
+// Export a default instance (legacy custom implementation)
 export const openRouterClient = new OpenRouterClient();
+
+// Re-export the official SDK version as the recommended default
+export { OpenRouterSDKClient, openRouterSDKClient, createOpenRouter } from './openrouterSDK.js';
+
+// Note: For new code, prefer using openRouterSDKClient (official SDK)
+// For existing code, openRouterClient (custom implementation) remains available
