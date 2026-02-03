@@ -6,11 +6,226 @@
  */
 
 import * as readline from 'readline';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { config } from '../config.js';
 import { openRouterClient } from '../openrouter.js';
+import { Maze } from './maze.js';
+import { Persona } from './persona.js';
 
 console.log('🎭 Generative Agents - Reverie Simulation Server');
 console.log('================================================\n');
+
+/**
+ * Main Reverie Simulation Server
+ * Orchestrates the multi-agent simulation
+ */
+export class ReverieServer {
+  maze: Maze | null = null;
+  personas: Map<string, Persona> = new Map();
+  currentStep: number = 0;
+  gameTime: Date = new Date();
+  embeddings: Map<string, number[]> = new Map();
+  simName: string = '';
+  
+  constructor(simName?: string) {
+    this.simName = simName || 'default_simulation';
+  }
+
+  /**
+   * Initialize simulation - load maze and personas
+   */
+  async initialize(simName: string, personaNames: string[] = []): Promise<void> {
+    this.simName = simName;
+    console.log(`\n🔧 Initializing simulation: ${simName}`);
+    
+    // Initialize maze
+    console.log('  📍 Loading maze...');
+    this.maze = new Maze('the_ville');
+    await this.maze.load();
+    console.log(`     ✓ Maze loaded: ${this.maze.mazeWidth}x${this.maze.mazeHeight}`);
+    
+    // Initialize personas
+    if (personaNames.length > 0) {
+      console.log('  👤 Loading personas...');
+      
+      // Find some valid walkable tiles for initial positions
+      const walkableTiles: [number, number][] = [];
+      for (let y = 0; y < this.maze.mazeHeight && walkableTiles.length < 10; y++) {
+        for (let x = 0; x < this.maze.mazeWidth && walkableTiles.length < 10; x++) {
+          const tile = this.maze.accessTile([x, y]);
+          if (tile && !tile.collision && tile.sector) {
+            walkableTiles.push([x, y]);
+          }
+        }
+      }
+      
+      for (let idx = 0; idx < personaNames.length; idx++) {
+        const name = personaNames[idx]!;
+        const persona = new Persona(name);
+        
+        // Set some default values if not loading from saved state
+        persona.scratch.firstName = name.split(' ')[0] || name;
+        persona.scratch.name = name;
+        persona.scratch.age = 25 + idx * 5;
+        persona.scratch.innate = 'friendly, curious';
+        persona.scratch.learned = 'likes to explore';
+        persona.scratch.currently = 'exploring the world';
+        persona.scratch.lifestyle = 'active and social';
+        
+        // Set valid starting position
+        const startTile = walkableTiles[idx % walkableTiles.length] || [5, 5];
+        persona.scratch.currTile = startTile;
+        
+        // Set current address from the tile
+        const tileDetails = this.maze.accessTile(startTile);
+        if (tileDetails && tileDetails.sector) {
+          persona.scratch.currAddress = `${tileDetails.world}:${tileDetails.sector}`;
+          if (tileDetails.arena) {
+            persona.scratch.currAddress += `:${tileDetails.arena}`;
+          }
+        }
+        
+        persona.scratch.currTime = new Date(this.gameTime);
+        
+        this.personas.set(name, persona);
+        console.log(`     ✓ Persona loaded: ${name} at [${startTile[0]}, ${startTile[1]}]`);
+      }
+    }
+    
+    // Set initial game time
+    this.gameTime = new Date(2023, 1, 13, 8, 0, 0); // Feb 13, 2023, 8:00 AM
+    this.currentStep = 0;
+    
+    console.log(`  ⏰ Game time: ${this.gameTime.toLocaleString()}`);
+    console.log('  ✅ Initialization complete!\n');
+  }
+
+  /**
+   * Run one simulation step for all personas
+   */
+  async step(): Promise<void> {
+    if (!this.maze) {
+      throw new Error('Maze not initialized');
+    }
+
+    console.log(`\n⏱️  Step ${this.currentStep} - ${this.gameTime.toLocaleTimeString()}`);
+    console.log('─'.repeat(60));
+    
+    // Each persona performs one cognitive cycle
+    for (const [name, persona] of this.personas) {
+      try {
+        const result = await persona.move(
+          this.maze,
+          this.personas,
+          persona.scratch.currTile,
+          new Date(this.gameTime),
+          this.embeddings
+        );
+        
+        console.log(`  ${result.pronunciation} ${name}:`);
+        console.log(`     Tile: [${result.nextTile[0]}, ${result.nextTile[1]}]`);
+        console.log(`     Action: ${result.description || 'idle'}`);
+        
+        // Update persona tile
+        persona.scratch.currTile = result.nextTile;
+      } catch (error) {
+        console.error(`  ❌ Error moving ${name}:`, error instanceof Error ? error.message : error);
+      }
+    }
+    
+    // Advance time (10 seconds per step by default)
+    this.gameTime = new Date(this.gameTime.getTime() + 10 * 1000);
+    this.currentStep++;
+  }
+
+  /**
+   * Run simulation for N steps
+   */
+  async run(numSteps: number): Promise<void> {
+    console.log(`\n▶️  Running simulation for ${numSteps} steps...\n`);
+    
+    for (let i = 0; i < numSteps; i++) {
+      await this.step();
+      
+      // Small delay to make console output readable
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    console.log(`\n✅ Simulation completed ${numSteps} steps!\n`);
+  }
+
+  /**
+   * Save simulation state
+   */
+  async save(folder: string): Promise<void> {
+    console.log(`\n💾 Saving simulation to ${folder}...`);
+    
+    // Create directory
+    if (!existsSync(folder)) {
+      await mkdir(folder, { recursive: true });
+    }
+    
+    // Save simulation metadata
+    const metadata = {
+      simName: this.simName,
+      currentStep: this.currentStep,
+      gameTime: this.gameTime.toISOString(),
+      personas: Array.from(this.personas.keys()),
+    };
+    
+    const metaPath = join(folder, 'metadata.json');
+    await writeFile(metaPath, JSON.stringify(metadata, null, 2));
+    
+    // Save each persona
+    for (const [name, persona] of this.personas) {
+      const personaFolder = join(folder, 'personas', name.replace(/\s+/g, '_'));
+      await persona.save(personaFolder);
+      console.log(`  ✓ Saved ${name}`);
+    }
+    
+    console.log('  ✅ Save complete!\n');
+  }
+
+  /**
+   * Load simulation state
+   */
+  async load(folder: string): Promise<void> {
+    console.log(`\n📂 Loading simulation from ${folder}...`);
+    
+    // Load metadata
+    const metaPath = join(folder, 'metadata.json');
+    if (!existsSync(metaPath)) {
+      throw new Error(`Metadata not found: ${metaPath}`);
+    }
+    
+    const metaContent = await readFile(metaPath, 'utf-8');
+    const metadata = JSON.parse(metaContent);
+    
+    this.simName = metadata.simName;
+    this.currentStep = metadata.currentStep;
+    this.gameTime = new Date(metadata.gameTime);
+    
+    // Load maze
+    console.log('  📍 Loading maze...');
+    this.maze = new Maze('the_ville');
+    await this.maze.load();
+    
+    // Load personas
+    console.log('  👤 Loading personas...');
+    this.personas.clear();
+    for (const name of metadata.personas) {
+      const personaFolder = join(folder, 'personas', name.replace(/\s+/g, '_'));
+      const persona = new Persona(name, personaFolder);
+      await persona.load();
+      this.personas.set(name, persona);
+      console.log(`     ✓ Loaded ${name}`);
+    }
+    
+    console.log('  ✅ Load complete!\n');
+  }
+}
 
 // Test OpenRouter connection
 async function testConnection() {
@@ -150,8 +365,10 @@ process.on('unhandledRejection', (error) => {
   process.exit(1);
 });
 
-// Run the server
-main().catch((error) => {
-  console.error('❌ Fatal error:', error);
-  process.exit(1);
-});
+// Run the server only when executed directly (not imported)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error('❌ Fatal error:', error);
+    process.exit(1);
+  });
+}

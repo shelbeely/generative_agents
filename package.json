@@ -10,6 +10,7 @@
     "start": "bun run src/backend/reverie.ts",
     "start:frontend": "bun run src/frontend/server.ts",
     "demo:vision": "npx tsx examples/vision-demo.ts",
+    "demo:simulation": "npx tsx examples/simple-simulation.ts",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "type-check": "tsc --noEmit"
