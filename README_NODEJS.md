@@ -11,6 +11,8 @@ This is a **modern Node.js/Bun.js port** of the [Generative Agents](https://arxi
 - ✅ **TypeScript** for type safety and better developer experience
 - ✅ **Bun.js** runtime for blazing-fast performance
 - ✅ **OpenRouter API** supporting multiple LLM providers (OpenAI, Anthropic, Google, etc.)
+- ✅ **Multi-Provider Support** - Use OpenRouter, GitHub Copilot SDK, or OpenClaw
+- ✅ **Model Comparison** - Compare responses from different models side-by-side
 - ✅ **Modern ESM modules** (ES2022+)
 - ✅ **Express.js** for the frontend server (replacing Django)
 - ✅ **Zero Python dependencies** - Pure Node.js/TypeScript implementation
@@ -282,6 +284,29 @@ See [MODERN_MODELS_2026.md](MODERN_MODELS_2026.md) for complete model comparison
 - Upgrade to `google/gemini-3-pro` for best quality with large context
 - OpenRouter provides unified billing across all providers
 - See [DEEPSEEK_GUIDE.md](DEEPSEEK_GUIDE.md) for optimization strategies
+- **NEW:** Try `npm run demo:compare-models` to compare different models
+- **NEW:** See [MULTI_PROVIDER_GUIDE.md](MULTI_PROVIDER_GUIDE.md) for using GitHub Copilot SDK or OpenClaw
+
+## 🎯 Demo Scripts
+
+Run these demos to explore features:
+
+```bash
+# Compare models side-by-side
+npm run demo:compare-models
+
+# DeepSeek-specific features
+npm run demo:deepseek
+
+# Vision capabilities (image understanding)
+npm run demo:vision
+
+# Modern LLM features (streaming, structured output)
+npm run demo:modern-llm
+
+# Official SDK demo
+npm run demo:official-sdk
+```
 
 ## 📚 Original Research
 
