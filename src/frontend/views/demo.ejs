@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - <%= simCode %></title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Phaser.js -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+    #game-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .control-panel {
+      width: 55%;
+      margin: 0 auto;
+      margin-top: 4.5em;
+    }
+    .persona-card {
+      background-color: #EEEEEE;
+      padding: 1em 2em;
+      border-radius: 10px;
+      margin-bottom: 1em;
+    }
+    .persona-detail {
+      display: none;
+      background-color: #e0e0e0;
+      padding: 1em;
+      border-radius: 5px;
+      margin-top: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <br>
+  <br>
+  
+  <div id="game-container"></div>
+
+  <div class="control-panel">
+    <h3 style="margin-bottom:1.5em; font-size:1.5em">
+      <em>This is a pre-computed replay of a simulation that accompanies the paper entitled "Generative Agents: Interactive Simulacra of Human Behavior." It is for demonstration purposes only.</em>
+    </h3>
+
+    <h3 style="margin-bottom:-0.5em; font-size:1.5em">Current Time:</h3>
+    <div class="row">
+      <div class="col-md-8" id="game-time">
+        <h2><span id="game-time-content"></span></h2>
+      </div>
+      <div class="col-md-4">
+        <h2 style="text-align: right;">
+          <button id="play_button" type="button" class="btn btn-default">
+            <strong style="font-size:1.2em"><i class="glyphicon glyphicon-play"></i> &nbsp;Play</strong>
+          </button>
+          <button id="pause_button" type="button" class="btn btn-default" style="display:none;">
+            <strong style="font-size:1.2em"><i class="glyphicon glyphicon-pause"></i> &nbsp;Pause</strong>
+          </button>
+        </h2>
+      </div>
+    </div>
+
+    <br>
+    <hr style="border-color:#999999">
+    <br>
+
+    <div class="row">
+      <div class="col-md-12" style="border:solid; padding:2em; border-radius: 15px">
+        <div class="row">
+          <% personaNames.forEach(function(p) { %>
+            <div class="col-md-2 col-sm-2" style="text-align:center; margin-bottom:0.8em;">
+              <a href="#" id="on_screen_det_trigger-<%= p.underscore %>">
+                <div class="row" style="padding:0">
+                  <div class="col-md-4" id="on_screen_det_trigger_container-<%= p.underscore %>" 
+                       style="text-align:center; padding:0; padding-top:0.3em">
+                    <img src="/static/assets/characters/profile/<%= p.underscore %>.png" 
+                         style="width:46px; padding:0;">
+                    <br>
+                    <%= p.initial %>
+                  </div>
+                  <div class="col-md-8" id="on_screen_det_content-<%= p.underscore %>" 
+                       style="text-align:left; padding:0; padding-left:0.5em; font-size:0.7em; display:none">
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Script -->
+  <script>
+    // Configuration passed from server
+    let step = <%= step %>;
+    let sim_code = "<%= simCode %>";
+    let step_size = <%= secPerStep %> * 1000;
+    
+    // Phaser 3.0 configuration
+    const config = {
+      type: Phaser.AUTO,
+      width: 1500,
+      height: 800,
+      parent: "game-container",
+      pixelArt: true,
+      physics: {
+        default: "arcade",
+        arcade: {
+          gravity: { y: 0 }
+        }
+      },
+      scene: {
+        preload: preload,
+        create: create,
+        update: update
+      },
+      scale: { zoom: 0.8 }
+    };
+
+    // Game instance
+    const game = new Phaser.Game(config);
+    let cursors;
+    let player;
+
+    // Persona variables
+    let persona_names = <%- personaInitPos %>;
+    var spawn_tile_loc = {};
+    for (var key in persona_names) {
+      spawn_tile_loc[key] = persona_names[key];
+    }
+
+    var personas = {};
+    var pronunciatios = {};
+    var speech_bubbles = {};
+    let anims_direction;
+    let pre_anims_direction;
+    let pre_anims_direction_dict = {};
+
+    // Movement configuration
+    let tile_width = 32;
+    let movement_speed = <%= playSpeed %>;
+    let execute_count_max = tile_width / movement_speed;
+    let execute_count = execute_count_max;
+    let movement_target = {};
+    let all_movement = <%- allMovement %>;
+
+    // Time display
+    let start_datetime = new Date(Date.parse("<%= startDatetime %>"));
+    var datetime_options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById("game-time-content").innerHTML = 
+      start_datetime.toLocaleTimeString("en-US", datetime_options);
+
+    // Play/Pause controls
+    let isPlaying = false;
+    document.getElementById("play_button").addEventListener("click", function() {
+      isPlaying = true;
+      document.getElementById("play_button").style.display = "none";
+      document.getElementById("pause_button").style.display = "inline-block";
+    });
+
+    document.getElementById("pause_button").addEventListener("click", function() {
+      isPlaying = false;
+      document.getElementById("pause_button").style.display = "none";
+      document.getElementById("play_button").style.display = "inline-block";
+    });
+
+    // Phaser functions (simplified - full implementation would be in separate JS file)
+    function preload() {
+      console.log("Preloading assets...");
+      // Load tilemap and character sprites
+      this.load.image("tiles", "/static/assets/the_ville/visuals/map_assets.png");
+      this.load.tilemapTiledJSON("map", "/static/assets/the_ville/matrix/the_ville_map.json");
+      
+      // Load character sprites
+      <% personaNames.forEach(function(p) { %>
+        this.load.spritesheet("<%= p.underscore %>",
+          "/static/assets/characters/movement_frames/<%= p.underscore %>.png",
+          { frameWidth: 32, frameHeight: 32 });
+      <% }); %>
+    }
+
+    function create() {
+      console.log("Creating game scene...");
+      // Create map
+      const map = this.make.tilemap({ key: "map" });
+      const tileset = map.addTilesetImage("Map", "tiles");
+      
+      // Create layers
+      const belowLayer = map.createLayer("Ground", tileset, 0, 0);
+      const worldLayer = map.createLayer("Objects", tileset, 0, 0);
+      
+      // Create personas
+      for (var persona_name in spawn_tile_loc) {
+        const pos = spawn_tile_loc[persona_name];
+        if (pos && pos.length >= 2) {
+          personas[persona_name] = this.physics.add.sprite(
+            pos[0] * tile_width,
+            pos[1] * tile_width,
+            persona_name
+          );
+        }
+      }
+      
+      // Setup camera
+      const camera = this.cameras.main;
+      camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+      
+      // Keyboard controls
+      cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    function update(time, delta) {
+      if (!isPlaying) return;
+      
+      // Update game time
+      if (execute_count >= execute_count_max) {
+        step++;
+        start_datetime = new Date(start_datetime.getTime() + step_size);
+        document.getElementById("game-time-content").innerHTML = 
+          start_datetime.toLocaleTimeString("en-US", datetime_options);
+        
+        // Update persona positions
+        if (all_movement[step]) {
+          for (var persona_name in all_movement[step]) {
+            const movement = all_movement[step][persona_name].movement;
+            if (movement && personas[persona_name]) {
+              movement_target[persona_name] = movement;
+            }
+            
+            // Update persona details display
+            const detail = all_movement[step][persona_name];
+            if (detail && detail.description) {
+              const detailEl = document.getElementById("on_screen_det_content-" + persona_name);
+              if (detailEl) {
+                detailEl.innerHTML = detail.description;
+              }
+            }
+          }
+        }
+        
+        execute_count = 0;
+      }
+      
+      // Move personas towards targets
+      for (var persona_name in movement_target) {
+        if (personas[persona_name] && movement_target[persona_name]) {
+          const target = movement_target[persona_name];
+          const sprite = personas[persona_name];
+          
+          const targetX = target[0] * tile_width;
+          const targetY = target[1] * tile_width;
+          
+          if (sprite.x < targetX) sprite.x += movement_speed;
+          if (sprite.x > targetX) sprite.x -= movement_speed;
+          if (sprite.y < targetY) sprite.y += movement_speed;
+          if (sprite.y > targetY) sprite.y -= movement_speed;
+        }
+      }
+      
+      execute_count++;
+    }
+  </script>
+</body>
+</html>
