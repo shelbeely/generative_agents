@@ -69,9 +69,15 @@ Edit `.env` and set your configuration:
 # Required: Your OpenRouter API key
 OPENROUTER_API_KEY=your_api_key_here
 
-# Optional: Choose your preferred models
-DEFAULT_MODEL=openai/gpt-3.5-turbo
-ADVANCED_MODEL=openai/gpt-4
+# Recommended 2026: Use DeepSeek-V3.2 for agentic systems
+DEFAULT_MODEL=deepseek/deepseek-chat
+ADVANCED_MODEL=deepseek/deepseek-chat
+FAST_MODEL=google/gemini-3-flash
+VISION_MODEL=google/gemini-3-flash
+
+# Alternative: Use Gemini 3 series
+# DEFAULT_MODEL=google/gemini-3-flash
+# ADVANCED_MODEL=google/gemini-3-pro
 
 # Optional: Your name
 KEY_OWNER=Your Name
@@ -240,20 +246,42 @@ bun run format
 
 This port supports any model available on OpenRouter. Some popular options:
 
-- `openai/gpt-4` - Most capable, slower
+### 2026 Recommended Models
+
+**For Generative Agents (Best Choice):**
+- `deepseek/deepseek-chat` - **⭐ NEW: DeepSeek-V3.2** - GPT-5 class reasoning, exceptional tool use, cost-effective
+- `google/gemini-3-flash` - Fast, excellent vision, real-time performance
+- `google/gemini-3-pro` - Best quality, 1M token context, multimodal
+
+**Classic Options:**
+- `openai/gpt-5` - Most capable (when available), premium
+- `openai/gpt-4` - Highly capable, slower
 - `openai/gpt-3.5-turbo` - Fast and cost-effective
-- `anthropic/claude-3-sonnet` - Anthropic's Claude
-- `google/gemini-pro` - Google's Gemini
-- `meta-llama/llama-3-70b` - Open source Llama
+- `anthropic/claude-4.5-opus` - Anthropic's latest
+- `meta-llama/llama-3.2-90b-vision` - Open source with vision
 
 Configure these in your `.env` file.
+
+### Why DeepSeek-V3.2?
+
+DeepSeek-V3.2 is specifically designed for agentic systems:
+- **GPT-5 class performance** at fraction of cost
+- **Exceptional tool-use** compliance
+- **Gold medal** results on IMO/IOI 2025
+- **DeepSeek Sparse Attention** for efficiency
+- **Perfect for multi-step** agent reasoning
+
+See [DEEPSEEK_GUIDE.md](DEEPSEEK_GUIDE.md) for detailed integration guide.
+See [MODERN_MODELS_2026.md](MODERN_MODELS_2026.md) for complete model comparison.
 
 ## 💡 Tips
 
 - Simulations can be expensive - save often!
-- Use `gpt-3.5-turbo` for development/testing
-- Upgrade to `gpt-4` for better agent behaviors
+- **2026 Update:** Use `deepseek/deepseek-chat` for best agentic performance at low cost
+- Use `google/gemini-3-flash` for fast development/testing with vision
+- Upgrade to `google/gemini-3-pro` for best quality with large context
 - OpenRouter provides unified billing across all providers
+- See [DEEPSEEK_GUIDE.md](DEEPSEEK_GUIDE.md) for optimization strategies
 
 ## 📚 Original Research
 

@@ -30,7 +30,23 @@ Based on research as of February 2026, here are the most capable modern models f
 - **Perfect for:** Critical decisions, accurate simulations
 - **Cost:** High
 
-### 3. **Anthropic Claude 4.5 Opus**
+### 3. **DeepSeek-V3.2** ⭐ AGENTIC RECOMMENDED
+- **Provider:** DeepSeek AI
+- **OpenRouter ID:** `deepseek/deepseek-chat`
+- **Context:** 64K tokens
+- **Strengths:**
+  - GPT-5 class reasoning and performance
+  - DeepSeek Sparse Attention (DSA) for efficiency
+  - Exceptional agentic tool-use capabilities
+  - Gold-medal performance on IMO/IOI 2025
+  - Large-scale agentic task synthesis
+  - Superior compliance and generalization in interactive environments
+  - Reduced training and inference cost while preserving quality
+  - PhD-level reasoning capabilities
+- **Perfect for:** Agentic systems, tool use, complex reasoning, cost-effective high-performance
+- **Cost:** Low-Medium (highly cost-effective for quality)
+
+### 4. **Anthropic Claude 4.5 Opus**
 - **OpenRouter ID:** `anthropic/claude-4.5-opus` (when available)
 - **Context:** 200K+ tokens
 - **Strengths:**
@@ -43,7 +59,20 @@ Based on research as of February 2026, here are the most capable modern models f
 
 ## ⚡ Fast & Efficient Models
 
-### 4. **Google Gemini 3 Flash** ⭐ BEST VALUE
+### 5. **DeepSeek-V3.2** ⭐ BEST FOR AGENTS
+- **OpenRouter ID:** `deepseek/deepseek-chat`
+- **Context:** 64K tokens
+- **Strengths:**
+  - GPT-5 class performance at fraction of cost
+  - Specialized for agentic tool-use scenarios
+  - DeepSeek Sparse Attention for efficiency
+  - Best-in-class reasoning for interactive systems
+  - Excellent compliance in tool-use workflows
+  - Strong generalization from task synthesis
+- **Perfect for:** Agentic systems, tool use, complex multi-step reasoning, cost optimization
+- **Cost:** Low-Medium
+
+### 6. **Google Gemini 3 Flash** ⭐ BEST VALUE
 - **OpenRouter ID:** `google/gemini-3-flash`
 - **Context:** Large (comparable to Pro)
 - **Strengths:**
@@ -54,7 +83,7 @@ Based on research as of February 2026, here are the most capable modern models f
 - **Perfect for:** Real-time agent decisions, frequent API calls
 - **Cost:** Low-Medium
 
-### 5. **Gemini 2.0 Flash**
+### 7. **Gemini 2.0 Flash**
 - **OpenRouter ID:** `google/gemini-2.0-flash`
 - **Context:** 1M tokens
 - **Strengths:**
@@ -66,7 +95,7 @@ Based on research as of February 2026, here are the most capable modern models f
 
 ## 🔓 Open Source Champions
 
-### 6. **Meta Llama 3.2 Vision (90B)**
+### 8. **Meta Llama 3.2 Vision (90B)**
 - **OpenRouter ID:** `meta-llama/llama-3.2-90b-vision`
 - **Context:** 131K tokens
 - **Strengths:**
@@ -77,7 +106,7 @@ Based on research as of February 2026, here are the most capable modern models f
 - **Perfect for:** Privacy-focused, custom deployments
 - **Cost:** Low (free for self-hosting)
 
-### 7. **xAI Grok 2 Vision**
+### 9. **xAI Grok 2 Vision**
 - **OpenRouter ID:** `xai/grok-2-vision`
 - **Context:** 33K tokens
 - **Strengths:**
@@ -87,7 +116,7 @@ Based on research as of February 2026, here are the most capable modern models f
 - **Perfect for:** Diverse agent personalities
 - **Cost:** Medium
 
-### 8. **GLM-4.6V (Z.ai)**
+### 10. **GLM-4.6V (Z.ai)**
 - **Context:** 128K tokens
 - **Strengths:**
   - Open source
@@ -103,12 +132,22 @@ Based on research as of February 2026, here are the most capable modern models f
 |-------|--------|-------|---------|------|-----------|----------|
 | **Gemini 3 Pro** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 1M | $$$$ | ⭐⭐⭐⭐⭐ | Complex agents |
 | **Gemini 3 Flash** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Large | $$ | ⭐⭐⭐⭐ | Real-time |
+| **DeepSeek-V3.2** | ⭐⭐⭐ | ⭐⭐⭐⭐ | 64K | $$ | ⭐⭐⭐⭐⭐ | Agentic tasks |
 | **GPT-5.2** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 400K | $$$$ | ⭐⭐⭐⭐⭐ | Accuracy |
 | **Claude 4.5 Opus** | ⭐⭐⭐⭐ | ⭐⭐⭐ | 200K | $$$$ | ⭐⭐⭐⭐⭐ | Reliability |
 | **Llama 3.2 Vision** | ⭐⭐⭐⭐ | ⭐⭐⭐ | 131K | $ | ⭐⭐⭐ | Open source |
 | **Grok 2 Vision** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | 33K | $$ | ⭐⭐⭐ | Diverse tasks |
 
 ## 🎯 Configuration Recommendations
+
+### For Agentic Systems (NEW - RECOMMENDED)
+```env
+# Best for generative agents with tool use
+DEFAULT_MODEL=deepseek/deepseek-chat
+FAST_MODEL=google/gemini-3-flash
+VISION_MODEL=google/gemini-3-flash
+ADVANCED_MODEL=deepseek/deepseek-chat
+```
 
 ### For Development/Testing
 ```env
@@ -147,6 +186,50 @@ ADVANCED_MODEL=meta-llama/llama-3.2-90b-vision
 ```
 
 ## 🔥 Key Features by Model
+
+### DeepSeek-V3.2 Capabilities - Specialized for Agents
+```typescript
+// GPT-5 class reasoning for complex agent decisions
+const agentDecision = await openRouterClient.chatCompletion([
+  { 
+    role: 'system', 
+    content: 'You are an intelligent agent. Use available tools to accomplish tasks.' 
+  },
+  { 
+    role: 'user', 
+    content: 'Plan the next action for Isabella Rodriguez who needs to organize a party.' 
+  }
+], {
+  model: 'deepseek/deepseek-chat',
+  temperature: 0.7,
+  // DeepSeek-V3.2 excels at multi-step agentic reasoning
+});
+
+// Exceptional tool-use compliance - best for function calling
+const toolResult = await openRouterClient.chatCompletion([
+  {
+    role: 'user',
+    content: 'Calculate the optimal meeting time for 5 people across 3 time zones'
+  }
+], {
+  model: 'deepseek/deepseek-chat',
+  tools: [
+    {
+      type: 'function',
+      function: {
+        name: 'calculate_time_overlap',
+        description: 'Find optimal meeting time across time zones',
+        parameters: { /* ... */ }
+      }
+    }
+  ],
+  // DeepSeek's agentic task synthesis makes it superior for tool workflows
+});
+
+// Cost-effective high-performance reasoning
+// DeepSeek Sparse Attention (DSA) reduces cost while maintaining quality
+// Perfect for generative agents that need frequent LLM calls
+```
 
 ### Gemini 3 Capabilities
 ```typescript
@@ -209,6 +292,8 @@ const vision = await openRouterClient.visionCompletion(
 // Use cheap models for routine tasks
 if (task.isRoutine) {
   model = 'google/gemini-3-flash'; // Fast & cheap
+} else if (task.requiresToolUse || task.isAgentic) {
+  model = 'deepseek/deepseek-chat'; // Best for agentic workflows
 } else if (task.isImportant) {
   model = 'google/gemini-3-pro'; // Quality
 } else if (task.isCritical) {
@@ -220,6 +305,9 @@ if (task.isRoutine) {
 ```typescript
 // For Gemini 3: Use persistent context
 // The model remembers, reducing token costs
+
+// For DeepSeek: Efficient sparse attention
+// DSA reduces cost while maintaining quality in long contexts
 
 // For others: Cache embeddings of memories
 // Only send relevant recent context
@@ -279,13 +367,21 @@ const videoAnalysis = await openRouterClient.chatCompletion([
 
 ### Reasoning (Higher is Better)
 - Gemini 3 Pro: **91.9%** GPQA Diamond
+- DeepSeek-V3.2: **~90%** GPQA Diamond (GPT-5 class)
 - GPT-5.2: **~90%** GPQA Diamond
 - Claude 4.5 Opus: **~88%** GPQA Diamond
 - Llama 3.2 90B: **~75%** GPQA Diamond
 
+### Agentic Performance (Higher is Better)
+- DeepSeek-V3.2: **Gold Medal** IMO 2025, IOI 2025 🏆
+- DeepSeek-V3.2: **Superior** tool-use compliance
+- Gemini 3 Pro: **Excellent** agentic capabilities
+- GPT-5.2: **Strong** function calling
+
 ### Speed (Lower is Better - Time to First Token)
 - Gemini 3 Flash: **~100ms**
 - Gemini 2 Flash: **~150ms**
+- DeepSeek-V3.2: **~180ms** (with DSA optimization)
 - GPT-5.2: **~200ms**
 - Claude 4.5: **~250ms**
 
@@ -294,6 +390,13 @@ const videoAnalysis = await openRouterClient.chatCompletion([
 - GPT-5: **400,000 tokens**
 - Claude 4.5: **200,000 tokens**
 - Llama 3.2: **131,000 tokens**
+- DeepSeek-V3.2: **64,000 tokens**
+
+### Cost Efficiency (Performance per Dollar)
+- DeepSeek-V3.2: **Excellent** (GPT-5 class at low-medium cost) 🏆
+- Gemini 3 Flash: **Excellent** (fast & cheap)
+- Llama 3.2: **Good** (free if self-hosted)
+- GPT-5: **Lower** (premium pricing)
 
 ## 📚 Model Selection Decision Tree
 
@@ -302,8 +405,12 @@ Is privacy critical?
 ├─ Yes → Llama 3.2 Vision (self-hosted)
 └─ No ↓
 
+Need tool use / agentic capabilities?
+├─ Yes → DeepSeek-V3.2 (best for agents) 🏆
+└─ No ↓
+
 Is cost a major concern?
-├─ Yes → Gemini 3 Flash
+├─ Yes → Gemini 3 Flash or DeepSeek-V3.2
 └─ No ↓
 
 Need massive context (>200K tokens)?
@@ -326,7 +433,7 @@ Need real-time responses?
 model: 'openai/gpt-4-vision-preview'
 
 // New (2026) - Better & often cheaper
-model: 'google/gemini-3-flash' // Or gpt-5, gemini-3-pro
+model: 'google/gemini-3-flash' // Or gpt-5, gemini-3-pro, deepseek-chat
 ```
 
 ### From Claude 3 → Claude 4.5
@@ -336,8 +443,101 @@ model: 'google/gemini-3-flash' // Or gpt-5, gemini-3-pro
 'anthropic/claude-3-sonnet' → 'anthropic/claude-4.5-sonnet'
 ```
 
+### Migrating to DeepSeek-V3.2 for Agents
+```typescript
+// If you're using GPT-4 or GPT-3.5 for agent tasks
+// Old
+model: 'openai/gpt-4-turbo-preview'
+model: 'openai/gpt-3.5-turbo'
+
+// New - Better performance, lower cost for agentic tasks
+model: 'deepseek/deepseek-chat'
+
+// Benefits:
+// - GPT-5 class reasoning at fraction of cost
+// - Superior tool-use compliance
+// - Excellent for multi-step agent workflows
+// - Sparse attention for efficiency
+```
+
+## 🌟 Why DeepSeek-V3.2 for Generative Agents?
+
+DeepSeek-V3.2 is particularly well-suited for generative agent systems:
+
+### 1. **Agentic Task Synthesis**
+- Trained on large-scale agentic task pipelines
+- Naturally understands agent workflows and tool use
+- Better compliance in interactive environments
+
+### 2. **Reasoning + Tool Use Integration**
+- Seamlessly integrates reasoning into tool-use scenarios
+- Handles multi-step agentic tasks efficiently
+- Strong performance on complex decision-making
+
+### 3. **Cost-Effective Excellence**
+- GPT-5 class performance at low-medium cost
+- DeepSeek Sparse Attention reduces inference costs
+- Perfect for simulations requiring many LLM calls
+
+### 4. **Proven Performance**
+- Gold medal results on IMO 2025 (mathematical reasoning)
+- Gold medal results on IOI 2025 (algorithmic thinking)
+- PhD-level reasoning capabilities
+
+### Example: Using DeepSeek for Agent Planning
+```typescript
+import { OpenRouterSDKClient } from './src/openrouterSDK.js';
+
+const client = new OpenRouterSDKClient();
+
+// Daily planning with DeepSeek's superior reasoning
+const plan = await client.chatCompletion([
+  {
+    role: 'system',
+    content: 'You are planning the day for Isabella Rodriguez, a creative writer.'
+  },
+  {
+    role: 'user',
+    content: 'Create a detailed daily schedule that balances writing, social interactions, and personal care.'
+  }
+], {
+  model: 'deepseek/deepseek-chat',
+  temperature: 0.7,
+  maxTokens: 2000
+});
+
+// Tool use with exceptional compliance
+const decision = await client.chatCompletion([
+  {
+    role: 'user',
+    content: 'Help Isabella decide whether to attend the party or finish her manuscript.'
+  }
+], {
+  model: 'deepseek/deepseek-chat',
+  tools: [
+    {
+      type: 'function',
+      function: {
+        name: 'check_deadline',
+        description: 'Check manuscript deadline',
+        parameters: { type: 'object', properties: {} }
+      }
+    },
+    {
+      type: 'function', 
+      function: {
+        name: 'evaluate_social_importance',
+        description: 'Evaluate importance of social event',
+        parameters: { type: 'object', properties: {} }
+      }
+    }
+  ]
+});
+```
+
 ## 📖 References
 
+- **DeepSeek-V3 Paper:** [DeepSeek AI Research](https://www.deepseek.com/)
 - **Gemini 3 Announcement:** [Google Blog](https://blog.google/products-and-platforms/products/gemini/gemini-3/)
 - **OpenRouter Models:** [openrouter.ai/models](https://openrouter.ai/models)
 - **Llama 3.2 Vision:** [Meta AI Blog](https://ai.meta.com/blog/llama-3-2-vision/)

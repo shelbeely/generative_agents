@@ -9,6 +9,7 @@
     "build": "bun build src/backend/reverie.ts --outdir dist --target bun",
     "start": "bun run src/backend/reverie.ts",
     "start:frontend": "bun run src/frontend/server.ts",
+    "demo:deepseek": "npx tsx examples/deepseek-demo.ts",
     "demo:vision": "npx tsx examples/vision-demo.ts",
     "demo:simulation": "npx tsx examples/simple-simulation.ts",
     "demo:modern-llm": "npx tsx examples/modern-llm-demo.ts",
