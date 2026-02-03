@@ -78,7 +78,7 @@ function getEnvVarAsBoolean(key: string, defaultValue: boolean): boolean {
 
 export const config: Config = {
   openrouter: {
-    apiKey: getEnvVar('OPENROUTER_API_KEY'),
+    apiKey: getEnvVar('OPENROUTER_API_KEY', 'your-api-key-here'),
     baseUrl: getEnvVar('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
     defaultModel: getEnvVar('DEFAULT_MODEL', 'google/gemini-3-flash'),
     fastModel: getEnvVar('FAST_MODEL', 'google/gemini-3-flash'),
