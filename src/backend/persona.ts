@@ -66,6 +66,9 @@ export class Persona {
   aMem: AssociativeMemory;
   scratch: Scratch;
 
+  // LLM Configuration - Each agent can use a different model
+  preferredModel: string | null = null;
+
   // Folder path where memory is saved
   private memoryFolder: string | null = null;
 
@@ -74,8 +77,9 @@ export class Persona {
    * 
    * @param name - Full name of the persona (unique identifier)
    * @param folderMemSaved - Optional folder containing saved memory state
+   * @param preferredModel - Optional specific model for this agent (e.g., 'deepseek/deepseek-chat', 'google/gemini-3-pro')
    */
-  constructor(name: string, folderMemSaved?: string) {
+  constructor(name: string, folderMemSaved?: string, preferredModel?: string) {
     this.name = name;
     
     // Initialize memory systems
@@ -83,10 +87,31 @@ export class Persona {
     this.aMem = new AssociativeMemory();
     this.scratch = new Scratch({ name });
 
+    // Set agent-specific model if provided
+    if (preferredModel) {
+      this.preferredModel = preferredModel;
+    }
+
     // If folder provided, we'll load from it
     if (folderMemSaved) {
       this.memoryFolder = folderMemSaved;
     }
+  }
+
+  /**
+   * Get the model to use for this agent's LLM operations
+   * Returns agent-specific model or falls back to default
+   */
+  getModel(): string {
+    // Use agent-specific model if set, otherwise use default from config
+    return this.preferredModel || 'default';
+  }
+
+  /**
+   * Set a specific model for this agent
+   */
+  setModel(model: string): void {
+    this.preferredModel = model;
   }
 
   /**
