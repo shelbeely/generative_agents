@@ -5,6 +5,7 @@
     "lib": ["ES2022"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "types": ["node"],
     
     // Type Checking
     "strict": true,
@@ -40,9 +41,6 @@
     "isolatedModules": true,
     "allowJs": true,
     "checkJs": false,
-    
-    // Bun/Node types
-    // "types": [],
     
     // Paths
     "baseUrl": ".",
