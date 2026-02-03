@@ -57,6 +57,15 @@ async function getEmbedding(_text: string): Promise<number[]> {
 }
 
 /**
+ * Extract the last component from a colon-separated string
+ * Used to get the base name from hierarchical addresses
+ */
+function extractLastComponent(value: unknown): string {
+  const str = String(value);
+  return str.includes(':') ? (str.split(':').pop() ?? str) : str;
+}
+
+/**
  * Perceive events and spatial information around the persona
  * 
  * This function:
@@ -155,9 +164,7 @@ export async function perceive(
     }
 
     // Format description
-    const subjectName = typeof s === 'string' && s.includes(':') 
-      ? s.split(':').pop()! 
-      : String(s);
+    const subjectName = extractLastComponent(s);
     const fullDesc = `${subjectName} is ${desc}`;
 
     // Check if this is a new event (not in recent memory)
@@ -169,10 +176,8 @@ export async function perceive(
     if (isNewEvent) {
       // Extract keywords from subject and object
       const keywords = new Set<string>();
-      const subj = typeof s === 'string' && s.includes(':') ? (s.split(':').pop() ?? String(s)) : String(s);
-      const obj = typeof o === 'string' && o.includes(':') ? (o.split(':').pop() ?? String(o)) : String(o);
-      keywords.add(subj);
-      keywords.add(obj);
+      keywords.add(extractLastComponent(s));
+      keywords.add(extractLastComponent(o));
 
       // Get embedding for description
       let descEmbeddingIn = fullDesc;

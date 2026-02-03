@@ -248,11 +248,11 @@ export async function retrieve(
     const relevanceNorm = normalizeDictFloats(relevanceOut, 0, 1);
 
     // Combine scores with weights
-    // Weights: [recency, relevance, importance] = [0.5, 2, 3]
-    const recencyW = 1;
-    const relevanceW = 1;
-    const importanceW = 1;
-    const gw = [0.5, 2, 3]; // Global weights
+    // The final score uses a two-tier weighting system:
+    // 1. Global weights (gw): [0.5, 2, 2] - baseline importance of each factor
+    // 2. Individual weights: Currently all 1.0, but could be adjusted per-agent
+    // Final formula: recencyW * recency * gw[0] + relevanceW * relevance * gw[1] + ...
+    const gw = [0.5, 2, 3]; // Global weights: [recency, relevance, importance]
 
     const masterScores = new Map<number, number>();
     for (const [nodeId] of recencyNorm) {
@@ -261,9 +261,9 @@ export async function retrieve(
       const importance = importanceNorm.get(nodeId) ?? 0;
 
       const score =
-        recencyW * recency * (gw[0] ?? 1) +
-        relevanceW * relevance * (gw[1] ?? 1) +
-        importanceW * importance * (gw[2] ?? 1);
+        recency * (gw[0] ?? 1) +
+        relevance * (gw[1] ?? 1) +
+        importance * (gw[2] ?? 1);
 
       masterScores.set(nodeId, score);
     }
