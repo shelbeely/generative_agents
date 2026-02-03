@@ -49,7 +49,7 @@ import { Maze } from './maze.js';
  */
 export interface ExecutionResult {
   nextTile: [number, number];
-  pronunciatio: string;
+  pronunciation: string;
   description: string;
 }
 
@@ -284,7 +284,7 @@ export class Persona {
     // Create execution result
     return {
       nextTile,
-      pronunciatio: '💭', // Default emoji, can be enhanced
+      pronunciation: '💭', // Default emoji, can be enhanced
       description: this.scratch.actDescription,
     };
   }
