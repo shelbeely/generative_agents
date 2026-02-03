@@ -22,14 +22,23 @@ This is a **modern Node.js/Bun.js port** of the [Generative Agents](https://arxi
 
 ## 🛠️ Installation
 
-### 1. Install Bun (if not already installed)
+### 1. Install Dependencies
 
+You can use either **Bun.js** (faster) or **Node.js** (more compatible):
+
+**Option A: With Bun (Recommended)**
 ```bash
-# On macOS/Linux
+# Install Bun if not already installed
 curl -fsSL https://bun.sh/install | bash
 
-# On Windows
-powershell -c "irm bun.sh/install.ps1 | iex"
+# Install dependencies
+bun install
+```
+
+**Option B: With Node.js**
+```bash
+# Requires Node.js v20+
+npm install
 ```
 
 ### 2. Clone and Install Dependencies
@@ -37,8 +46,14 @@ powershell -c "irm bun.sh/install.ps1 | iex"
 ```bash
 git clone https://github.com/shelbeely/generative_agents.git
 cd generative_agents
+
+# Install dependencies (REQUIRED before running)
+npm install
+# OR
 bun install
 ```
+
+> **⚠️ Important:** You must run `npm install` or `bun install` before running any scripts. This installs TypeScript, type definitions, and all dependencies.
 
 ### 3. Configure Environment
 
@@ -68,13 +83,35 @@ You'll need to run two servers concurrently:
 
 **Terminal 1 - Frontend Server:**
 ```bash
+# With Bun
 bun run dev:frontend
+
+# OR with Node.js
+npx tsx src/frontend/server.ts
 ```
 
 **Terminal 2 - Backend Simulation Server:**
 ```bash
+# With Bun
 bun run dev
+
+# OR with Node.js
+npx tsx src/backend/reverie.ts
 ```
+
+### 5. Verify Installation
+
+Before running the servers, verify your setup:
+
+```bash
+# Check TypeScript compilation
+npm run type-check
+
+# Check code style
+npm run lint
+```
+
+Both commands should complete with no errors.
 
 ## 🎮 Running a Simulation
 
