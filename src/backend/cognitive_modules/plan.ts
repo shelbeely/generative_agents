@@ -47,17 +47,25 @@ export async function generateFirstDailyPlan(
   // This should use the persona's identity, lifestyle, and memories
   // to generate a realistic daily schedule
   
+  // Helper function to format hour
+  const formatHour = (hour: number): string => {
+    if (hour === 0) return '12:00 AM';
+    if (hour < 12) return `${hour.toString().padStart(2, '0')}:00 AM`;
+    if (hour === 12) return '12:00 PM';
+    return `${(hour - 12).toString().padStart(2, '0')}:00 PM`;
+  };
+
   const schedule = [
     {
-      time: `${wakeUpHour}:00 AM`,
+      time: formatHour(wakeUpHour),
       activity: 'wake up and complete morning routine',
     },
     {
-      time: `${wakeUpHour + 1}:00 AM`,
+      time: formatHour(wakeUpHour + 1),
       activity: 'have breakfast',
     },
     {
-      time: `${wakeUpHour + 2}:00 AM`,
+      time: formatHour(wakeUpHour + 2),
       activity: 'start daily activities',
     },
   ];

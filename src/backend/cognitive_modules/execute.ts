@@ -167,12 +167,11 @@ export function execute(
       }
     }
 
-    // If all tiles are occupied, use original targets
-    if (newTargetTiles.length === 0) {
-      targetTiles = targetTiles;
-    } else {
+    // If all tiles are occupied, use original targets anyway
+    if (newTargetTiles.length > 0) {
       targetTiles = newTargetTiles;
     }
+    // else: keep targetTiles as is
 
     // Find shortest path to one of the target tiles
     let closestTargetTile: [number, number] | null = null;
