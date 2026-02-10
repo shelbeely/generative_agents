@@ -1,0 +1,67 @@
+"""
+Configuration file for Generative Agents
+Copy this file to utils.py and fill in your API keys
+
+Choose one of the two options below:
+- Option A: Use OpenRouter (recommended for 2026, access to multiple AI models)
+- Option B: Use OpenAI directly (legacy support)
+"""
+
+# ==============================================================================
+# OPTION A: OpenRouter Configuration (Recommended for 2026)
+# ==============================================================================
+# Uncomment the lines below to use OpenRouter
+
+# use_openrouter = True
+# openrouter_api_key = "<Your OpenRouter API Key>"  # Get from https://openrouter.ai
+
+# Choose your models from OpenRouter's catalog:
+# - "openai/gpt-3.5-turbo" - Fast and cost-effective
+# - "openai/gpt-4" - Most capable OpenAI model
+# - "anthropic/claude-3-opus" - Anthropic's most powerful model
+# - "anthropic/claude-3-sonnet" - Balanced performance and cost
+# - "meta-llama/llama-3-70b-instruct" - Open-source alternative
+# - "google/gemini-pro" - Google's Gemini model
+# See full list at: https://openrouter.ai/models
+
+# Model Configuration:
+# openrouter_chat_model - Used for standard/fast operations (ChatGPT_request function)
+# openrouter_gpt4_model - Used for advanced/reasoning tasks (GPT4_request function)
+#                         NOTE: Despite the name, this can be ANY model - GPT-4, Claude, Gemini, etc.
+#                         The name is historical; it refers to "advanced model" not specifically GPT-4.
+
+# openrouter_chat_model = "openai/gpt-3.5-turbo"
+# openrouter_gpt4_model = "openai/gpt-4"  # Or: "anthropic/claude-3-opus", "google/gemini-pro", etc.
+
+# OpenAI key (optional, only needed if using OpenAI embeddings)
+# openai_api_key = "<Your OpenAI API Key>"
+
+
+# ==============================================================================
+# OPTION B: Direct OpenAI Configuration (Legacy)
+# ==============================================================================
+# Uncomment the lines below to use OpenAI directly
+
+use_openrouter = False
+openai_api_key = "<Your OpenAI API Key>"  # Get from https://platform.openai.com
+
+
+# ==============================================================================
+# Common Configuration (Required for both options)
+# ==============================================================================
+
+# Your name
+key_owner = "<Your Name>"
+
+# Asset locations (do not modify unless you know what you're doing)
+maze_assets_loc = "../../environment/frontend_server/static_dirs/assets"
+env_matrix = f"{maze_assets_loc}/the_ville/matrix"
+env_visuals = f"{maze_assets_loc}/the_ville/visuals"
+
+fs_storage = "../../environment/frontend_server/storage"
+fs_temp_storage = "../../environment/frontend_server/temp_storage"
+
+collision_block_id = "32125"
+
+# Debug mode - set to True for verbose logging
+debug = True
